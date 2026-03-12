@@ -51,8 +51,27 @@ def process_data():
     )
     conn.commit()
 
-    print(f"[FOG] Processed: Patient {patient_id}, HR: {heart_rate}, SpO2: {spo2} → {status}") 
+    print(f"[FOG] Processed: Patient {patient_id}, HR: {heart_rate}, SpO2: {spo2} → {status}")
     return jsonify({"status": status})
+
+# NEW ENDPOINT FOR FRONTEND
+@app.route('/readings', methods=['GET'])
+def get_readings():
+    cursor.execute("SELECT * FROM readings ORDER BY timestamp DESC LIMIT 50")
+    rows = cursor.fetchall()
+
+    result = []
+
+    for r in rows:
+        result.append({
+            "patient_id": r[0],
+            "heart_rate": r[1],
+            "spo2": r[2],
+            "status": r[3],
+            "timestamp": r[4]
+        })
+
+    return jsonify(result)
 
 if __name__ == '__main__':
     print("Fog node running on port 5001...")
