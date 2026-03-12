@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IoMT Patient Monitoring Dashboard</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background:#f5f7fa;
+margin:0;
+padding:30px;
+}
+
+h1{
+text-align:center;
+margin-bottom:30px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+th, td{
+padding:12px;
+text-align:center;
+border-bottom:1px solid #ddd;
+}
+
+th{
+background:#2c3e50;
+color:white;
+}
+
+tr:hover{
+background:#f2f2f2;
+}
+
+.normal{
+background:#d4edda;
+}
+
+.alert{
+background:#f8d7da;
+}
+
+.metrics{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:5px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+width:30%;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>IoMT Monitoring Dashboard</h1>
+
+<div class="metrics">
+
+<div class="card">
+<h3>Total Readings</h3>
+<p id="total">0</p>
+</div>
+
+<div class="card">
+<h3>Alerts</h3>
+<p id="alerts">0</p>
+</div>
+
+<div class="card">
+<h3>Normal</h3>
+<p id="normal">0</p>
+</div>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Patient</th>
+<th>Heart Rate (BPM)</th>
+<th>SpO₂ (%)</th>
+<th>Status</th>
+<th>Timestamp</th>
+</tr>
+</thead>
+
+<tbody id="tableBody">
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+async function loadData(){
+
+try{
+
+const response = await fetch("http://127.0.0.1:5001/readings");
+const data = await response.json();
+
+const table = document.getElementById("tableBody");
+table.innerHTML = "";
+
+let alerts = 0;
+let normal = 0;
+
+data.forEach(r => {
+
+const row = document.createElement("tr");
+
+if(r.status === "Normal"){
+row.className = "normal";
+normal++;
+}else{
+row.className = "alert";
+alerts++;
+}
+
+row.innerHTML = `
+<td>${r.patient_id}</td>
+<td>${r.heart_rate}</td>
+<td>${r.spo2}</td>
+<td>${r.status}</td>
+<td>${r.timestamp}</td>
+`;
+
+table.appendChild(row);
+
+});
+
+document.getElementById("total").innerText = data.length;
+document.getElementById("alerts").innerText = alerts;
+document.getElementById("normal").innerText = normal;
+
+}catch(e){
+console.error("Error loading data:",e);
+}
+
+}
+
+loadData();
+
+/* auto refresh every 3 seconds */
+
+setInterval(loadData,3000);
+
+</script>
+
+</body>
+</html>
