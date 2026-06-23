@@ -1,4 +1,4 @@
-# Iomt-hybrid-fog-edge-
+# Iomt-hybrid-fog-edge Devices
 This project is a miron project in which we are trying to show that a hybrid fog-edge design allows for lower latency and scalability for IoMT implementations. This is the implementation created to achieve the project objectives. 
 
 Please note:
